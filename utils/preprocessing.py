@@ -1,6 +1,9 @@
 import re
-
-from indoNLP.preprocessing import replace_slang
+try:
+    from indoNLP.preprocessing import replace_slang
+except:
+    def replace_slang(text):
+        return text
 from rapidfuzz import process
 
 from Sastrawi.StopWordRemover.StopWordRemoverFactory import (
