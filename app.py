@@ -2,7 +2,7 @@ import os
 import pymysql
 pymysql.install_as_MySQLdb()
 
-from flask import Flask
+from flask import Flask, render_template
 from extensions import db, cache
 
 # IMPORT ROUTES
