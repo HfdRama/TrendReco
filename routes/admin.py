@@ -825,6 +825,9 @@ def init_admin_routes(app):
                 select(TrendsData)
             ).scalars().all()
 
+            print(f"Sosmed Data : {len(sosmed_data)}")
+            print(f"Trend Data  : {len(trend_data)}")
+
             if not sosmed_data and not trend_data:
 
                 return jsonify({
@@ -833,7 +836,7 @@ def init_admin_routes(app):
                 })
 
             # =========================
-            # BUILD VOCABULARY OTOMATIS
+            # BUILD VOCABULARY
             # =========================
             all_texts = []
 
@@ -852,26 +855,30 @@ def init_admin_routes(app):
                     f"{trend.category or ''}"
                 )
 
+            # batasi agar tidak terlalu besar
             auto_vocab = build_vocabulary(
-                all_texts
+                all_texts[:3000]
             )
 
             set_vocabulary(
-                auto_vocab
+                auto_vocab[:5000]
             )
 
             print(
-                f"Vocabulary Loaded: {len(auto_vocab)} words"
+                f"Vocabulary Loaded: {len(auto_vocab[:5000])} words"
             )
 
             # =========================
-            # KOSONGKAN TABLE
+            # HAPUS DATA LAMA
             # =========================
             db.session.query(
                 PreprocessingData
             ).delete()
 
+            db.session.commit()
+
             count = 0
+            BATCH_SIZE = 100
 
             # ==================================================
             # PREPROCESSING SOSMED
@@ -919,14 +926,22 @@ def init_admin_routes(app):
                     ]
                 )
 
-                db.session.add(
-                    new_row
-                )
+                db.session.add(new_row)
 
                 count += 1
 
+                if count % BATCH_SIZE == 0:
+
+                    db.session.commit()
+
+                    db.session.expunge_all()
+
+                    print(
+                        f"{count} data selesai diproses"
+                    )
+
             # ==================================================
-            # PREPROCESSING GOOGLE TRENDS
+            # PREPROCESSING TRENDS
             # ==================================================
             for trend in trend_data:
 
@@ -970,13 +985,24 @@ def init_admin_routes(app):
                     ]
                 )
 
-                db.session.add(
-                    new_row
-                )
+                db.session.add(new_row)
 
                 count += 1
 
+                if count % BATCH_SIZE == 0:
+
+                    db.session.commit()
+
+                    db.session.expunge_all()
+
+                    print(
+                        f"{count} data selesai diproses"
+                    )
+
+            # commit sisa data
             db.session.commit()
+
+            db.session.expunge_all()
 
             return jsonify({
 
@@ -990,6 +1016,8 @@ def init_admin_routes(app):
         except Exception as e:
 
             db.session.rollback()
+
+            print("ERROR:", str(e))
 
             return jsonify({
 
