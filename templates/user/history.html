@@ -1,0 +1,203 @@
+{% extends "user/layout.html" %}
+
+{% block title %}Riwayat Analisis AI | TrendReco{% endblock %}
+
+{% block content %}
+
+<!-- FontAwesome untuk Icon pendukung -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+
+<div class="min-h-screen bg-gradient-to-b from-blue-50/60 to-white px-3 py-5 sm:px-6 sm:py-8">
+    <div class="max-w-3xl mx-auto space-y-5 sm:space-y-6">
+
+        <!-- ========================= -->
+        <!-- HEADER UTAMA (LEBIH RAMAH & CERIA) -->
+        <!-- ========================= -->
+        <div class="bg-white border border-blue-100/80 rounded-[2rem] p-5 sm:p-6 shadow-sm relative overflow-hidden">
+            <!-- Dekorasi latar belakang lembut agar tidak kaku -->
+            <div class="absolute -top-10 -right-10 w-32 h-32 bg-blue-50 rounded-full blur-2xl pointer-events-none"></div>
+            
+            <div class="relative flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div>
+                    <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gradient-to-r from-blue-500 to-indigo-500 text-white text-[11px] font-bold shadow-xs">
+                        <i class="fa-solid fa-wand-magic-sparkles text-[10px]"></i>
+                        <span>Asisten Pintar AI Anda</span>
+                    </div>
+
+                    <h1 class="mt-2.5 text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
+                        Riwayat Ide Konten
+                    </h1>
+
+                    <p class="mt-1 text-xs sm:text-sm text-slate-500 leading-relaxed">
+                        Hai! Semua rencana video, strategi, caption, dan hashtag seru yang pernah Anda buat tersimpan rapi di sini.
+                    </p>
+                </div>
+
+                <!-- Tombol Buat Baru yang Mencolok & Mudah Ditekan -->
+                <div class="pt-1 sm:pt-0 shrink-0">
+                    <a href="/user/generate"
+                       class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3.5 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold text-sm shadow-md shadow-blue-200 transition transform active:scale-95">
+                        <i class="fa-solid fa-circle-plus text-base"></i>
+                        <span>Bikin Konten Baru, Yuk!</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Kartu Statistik Kecil Berwarna Lembut -->
+            <div class="grid grid-cols-2 gap-3 mt-5 pt-4 border-t border-slate-100">
+                <div class="bg-blue-50/50 rounded-2xl p-3 text-center">
+                    <p class="text-[10px] text-blue-500 font-extrabold uppercase tracking-wider">📂 Total Topik</p>
+                    <h3 class="text-xl font-black text-slate-900 mt-0.5">
+                        {{ history_data|length }}
+                    </h3>
+                </div>
+
+                <div class="bg-indigo-50/50 rounded-2xl p-3 text-center">
+                    <p class="text-[10px] text-indigo-500 font-extrabold uppercase tracking-wider">✨ Total Ide AI</p>
+                    <h3 class="text-xl font-black text-slate-900 mt-0.5">
+                        {{ history_data|sum(attribute='total_result') }}
+                    </h3>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================= -->
+        <!-- FILTER PLATFORM (LEBIH GEMAS & FUN) -->
+        <!-- ========================= -->
+        <div class="bg-white border border-slate-100 rounded-2xl p-2 shadow-xs">
+            <!-- Geser kanan-kiri di HP tanpa patah-patah -->
+            <div class="flex items-center gap-2 overflow-x-auto no-scrollbar scroll-smooth">
+                <a href="{{ url_for('history', platform='all') }}"
+                   class="px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold border transition-all whitespace-nowrap
+                   {% if selected_platform == 'all' %}
+                   bg-blue-600 text-white border-blue-600 shadow-sm shadow-blue-100
+                   {% else %}
+                   bg-slate-50 text-slate-600 border-transparent hover:bg-slate-100
+                   {% endif %}">
+                    Semua Kategori
+                </a>
+
+                <a href="{{ url_for('history', platform='tiktok') }}"
+                   class="px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold border transition-all whitespace-nowrap flex items-center gap-1.5
+                   {% if selected_platform == 'tiktok' %}
+                   bg-slate-900 text-white border-slate-900 shadow-sm
+                   {% else %}
+                   bg-slate-50 text-slate-600 border-transparent hover:bg-slate-100
+                   {% endif %}">
+                    <i class="fa-brands fa-tiktok text-cyan-400"></i> TikTok
+                </a>
+
+                <a href="{{ url_for('history', platform='instagram') }}"
+                   class="px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold border transition-all whitespace-nowrap flex items-center gap-1.5
+                   {% if selected_platform == 'instagram' %}
+                   bg-gradient-to-r from-purple-600 to-pink-500 text-white border-transparent shadow-sm shadow-pink-100
+                   {% else %}
+                   bg-slate-50 text-slate-600 border-transparent hover:bg-slate-100
+                   {% endif %}">
+                    <i class="fa-brands fa-instagram text-amber-400"></i> Instagram
+                </a>
+
+                <a href="{{ url_for('history', platform='youtube') }}"
+                   class="px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold border transition-all whitespace-nowrap flex items-center gap-1.5
+                   {% if selected_platform == 'youtube' %}
+                   bg-red-500 text-white border-red-500 shadow-sm shadow-red-100
+                   {% else %}
+                   bg-slate-50 text-slate-600 border-transparent hover:bg-slate-100
+                   {% endif %}">
+                    <i class="fa-brands fa-youtube text-white"></i> YouTube
+                </a>
+            </div>
+        </div>
+
+        <!-- ========================= -->
+        <!-- DAFTAR KARTU RIWAYAT (URUTAN KE BAWAH NYAMAN DI HP) -->
+        <!-- ========================= -->
+        {% if history_data %}
+        <div class="space-y-3.5">
+            {% for item in history_data %}
+            <a href="{{ url_for('history_detail', generate_id=item.generate_id) }}"
+               class="group block bg-white border border-slate-200/60 rounded-2xl p-4 hover:shadow-lg hover:border-blue-400 transition-all duration-300 relative">
+                
+                <div class="flex flex-col gap-3">
+                    
+                    <!-- Label Platform Mini -->
+                    <div class="flex flex-wrap gap-1.5">
+                        <span class="px-2.5 py-0.5 rounded-md bg-blue-50 text-blue-600 text-[10px] font-bold uppercase tracking-wider border border-blue-100/50">
+                            {{ item.platform }}
+                        </span>
+
+                        {% if item.goal %}
+                        <span class="px-2.5 py-0.5 rounded-md bg-amber-50 text-amber-700 text-[10px] font-bold uppercase tracking-wider border border-amber-150">
+                            🎯 {{ item.goal }}
+                        </span>
+                        {% endif %}
+                    </div>
+
+                    <!-- Judul Utama yang Diketik Pengguna -->
+                    <div>
+                        <h2 class="text-sm sm:text-base font-bold text-slate-900 group-hover:text-blue-600 transition-colors line-clamp-2 leading-relaxed">
+                            {{ item.input_text }}
+                        </h2>
+                        
+                        <!-- Rincian Jumlah Ide Hasil AI -->
+                        <div class="mt-2 inline-flex items-center gap-1.5 px-2 py-1 rounded-lg bg-emerald-50 text-emerald-700 text-xs font-semibold">
+                            <i class="fa-solid fa-circle-check text-[10px]"></i>
+                            <span>Ada {{ item.total_result }} pilihan ide siap pakai</span>
+                        </div>
+                    </div>
+
+                    <!-- Bagian Bawah: Waktu & Tombol Masuk -->
+                    <div class="flex items-center justify-between mt-1 pt-3 border-t border-slate-100 text-xs text-slate-400">
+                        <div class="flex items-center gap-1">
+                            <i class="fa-regular fa-clock text-[11px]"></i>
+                            <span>{{ item.timestamp.strftime('%d %b %Y') }}</span>
+                            <span>•</span>
+                            <span>{{ item.timestamp.strftime('%H:%M') }} WIB</span>
+                        </div>
+                        
+                        <!-- Tombol Aksi yang Jelas dan Ramah -->
+                        <div class="text-blue-600 font-bold flex items-center gap-1 bg-blue-50 px-3 py-1.5 rounded-xl group-hover:bg-blue-600 group-hover:text-white transition-all duration-200">
+                            <span>Buka Ide</span>
+                            <i class="fa-solid fa-chevron-right text-[9px]"></i>
+                        </div>
+                    </div>
+
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+
+        {% else %}
+        <!-- ========================= -->
+        <!-- TAMPILAN JIKA MASIH KOSONG -->
+        <!-- ========================= -->
+        <div class="bg-white border border-slate-150 rounded-[2rem] p-12 text-center shadow-xs">
+            <div class="w-16 h-16 mx-auto rounded-full bg-amber-50 flex items-center justify-center text-amber-500">
+                <i class="fa-solid fa-folder-open text-2xl"></i>
+            </div>
+
+            <h2 class="mt-4 text-base font-black text-slate-900">
+                Belum ada riwayat di sini
+            </h2>
+
+            <p class="mt-1 text-xs text-slate-400 max-w-xs mx-auto leading-relaxed">
+                Jangan bingung, yuk langsung ketuk tombol <b>"Bikin Konten Baru"</b> di atas untuk mulai membuat ide pertama Anda!
+            </p>
+        </div>
+        {% endif %}
+
+    </div>
+</div>
+
+<!-- Trik CSS khusus agar geser menu filter di HP tidak menampilkan garis scroll hitam kasar -->
+<style>
+    .no-scrollbar::-webkit-scrollbar {
+        display: none;
+    }
+    .no-scrollbar {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+</style>
+
+{% endblock %}

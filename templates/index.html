@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TrendReco | AI Rekomendasi Ide Konten yang Mengasyikkan</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: #f8fafc;
+            color: #0f172a;
+            overflow-x: hidden;
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23e2e8f0' fill-opacity='0.2'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2v-4h4v-2h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2v-4h4v-2H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+
+        @keyframes floating {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-15px) rotate(1deg); }
+        }
+
+        .floating {
+            animation: floating 6s ease-in-out infinite;
+        }
+
+        @keyframes pulseGlow {
+            0%, 100% { box-shadow: 0 0 5px rgba(37, 99, 235, 0.2); }
+            50% { box-shadow: 0 0 25px rgba(37, 99, 235, 0.5); }
+        }
+
+        .pulse-glow {
+            animation: pulseGlow 3s infinite;
+        }
+
+        .card-hover {
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .card-hover:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        .hero-gradient {
+            background: 
+                radial-gradient(circle at 10% 20%, rgba(59, 130, 246, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(99, 102, 241, 0.15) 0%, transparent 40%);
+        }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+        }
+        
+        lottie-player {
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+
+<body>
+
+<nav class="sticky top-0 z-50 glass border-b border-slate-200/50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+        <div class="flex items-center gap-2 sm:gap-3">
+            <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center pulse-glow font-bold text-lg sm:text-xl">
+                T
+            </div>
+            <h1 class="text-xl sm:text-2xl font-extrabold tracking-tight">
+                Trend<span class="text-blue-600">Reco</span>
+            </h1>
+        </div>
+
+        <!-- Menu Desktop -->
+        <div class="hidden md:flex items-center gap-8 text-sm font-semibold text-slate-700">
+            <a href="#cara-kerja" class="hover:text-blue-600 transition duration-300 relative group">
+                Cara Kerja
+                <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-blue-600 transition-all group-hover:w-full"></span>
+            </a>
+            <a href="#fitur" class="hover:text-blue-600 transition duration-300 relative group">
+                Fitur
+                <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-blue-600 transition-all group-hover:w-full"></span>
+            </a>
+            <a href="#hasil" class="hover:text-blue-600 transition duration-300 relative group">
+                Hasil AI
+                <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-blue-600 transition-all group-hover:w-full"></span>
+            </a>
+        </div>
+
+        <div class="flex items-center gap-3">
+            <a href="/user/login"
+               class="px-4 py-2 sm:px-5 sm:py-3 rounded-xl bg-slate-950 hover:bg-blue-600 text-white text-xs sm:text-sm font-bold transition duration-300 active:scale-95 shadow-md shadow-slate-300">
+                Masuk
+            </a>
+            <!-- Tombol Hamburger Menu Mobile -->
+            <button id="menu-btn" class="block md:hidden text-slate-700 focus:outline-none p-1">
+                <i class="fa-solid fa-bars text-xl"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Dropdown Menu Mobile -->
+    <div id="mobile-menu" class="hidden md:hidden border-b border-slate-200 bg-white/95 backdrop-blur-md px-4 py-4 space-y-3 font-semibold text-slate-700 text-sm">
+        <a href="#cara-kerja" class="block hover:text-blue-600 transition py-1">Cara Kerja</a>
+        <a href="#fitur" class="block hover:text-blue-600 transition py-1">Fitur</a>
+        <a href="#hasil" class="block hover:text-blue-600 transition py-1">Hasil AI</a>
+    </div>
+</nav>
+
+<section class="relative py-12 sm:py-20 md:py-32 overflow-hidden hero-gradient">
+    <div class="absolute top-0 left-0 w-72 h-72 md:w-96 md:h-96 bg-blue-200/50 rounded-full blur-[100px] md:blur-[120px] -translate-x-1/2 -translate-y-1/2"></div>
+    <div class="absolute bottom-0 right-0 w-72 h-72 md:w-96 md:h-96 bg-indigo-200/50 rounded-full blur-[100px] md:blur-[120px] translate-x-1/2 translate-y-1/2"></div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 relative">
+        <div class="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+            
+            <div data-aos="fade-right" data-aos-duration="1000" class="text-center lg:text-left">
+                <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-100 text-blue-700 text-xs sm:text-sm font-extrabold mb-6 shadow-inner mx-auto lg:mx-0">
+                    <i class="fa-solid fa-sparkles animate-pulse"></i>
+                    AI Content Recommendation
+                </div>
+
+                <h1 class="text-3xl sm:text-4xl lg:text-6xl font-black leading-tight text-slate-950">
+                    Bingung Mau<br class="hidden sm:block">
+                    <span class="text-blue-600 relative inline-block mt-1">
+                        Bikin Konten Apa?
+                        <svg class="absolute -bottom-2 left-0 w-full" viewBox="0 0 338 12" fill="none"><path d="M3 9C118.957 2.33227 219.043 2.33227 335 9" stroke="#2563EB" stroke-width="6" stroke-linecap="round"/></svg>
+                    </span>
+                </h1>
+
+                <p class="mt-6 sm:mt-8 text-base sm:text-lg text-slate-700 leading-relaxed max-w-xl mx-auto lg:mx-0">
+                    TrendReco membantu kamu menemukan ide konten yang <span class="font-semibold text-slate-900">pasti disukai audiens</span> berdasarkan tren media sosial dan analisis cerdas AI. Cocok untuk siapa saja!
+                </p>
+
+                <div class="flex flex-col sm:flex-row gap-3 sm:gap-4 mt-8 sm:mt-12 justify-center lg:justify-start">
+                    <a href="/user/login"
+                       class="group px-6 py-3.5 sm:px-8 sm:py-4 rounded-full bg-blue-600 hover:bg-blue-700 text-white font-bold text-center transition-all duration-300 active:scale-95 shadow-lg shadow-blue-200 flex items-center justify-center gap-2 text-sm sm:text-base">
+                        <span>Mulai Analisis AI</span>
+                        <i class="fa-solid fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
+                    </a>
+                    <a href="#cara-kerja"
+                       class="px-6 py-3.5 sm:px-8 sm:py-4 rounded-full border-2 border-slate-300 hover:border-blue-600 hover:text-blue-600 font-bold text-center transition-all duration-300 bg-white/50 text-sm sm:text-base">
+                        Lihat Cara Kerja
+                    </a>
+                </div>
+
+                <div class="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4 mt-8 sm:mt-12 text-xs sm:text-sm text-slate-600 font-medium justify-center lg:justify-start">
+                    <div class="flex items-center gap-2.5 bg-white px-4 py-2 rounded-full shadow-sm justify-center sm:justify-start">
+                        <i class="fa-solid fa-circle-check text-emerald-500 text-base"></i>
+                        Analisis Tren Terkini
+                    </div>
+                    <div class="flex items-center gap-2.5 bg-white px-4 py-2 rounded-full shadow-sm justify-center sm:justify-start">
+                        <i class="fa-solid fa-circle-check text-emerald-500 text-base"></i>
+                        Rekomendasi Pintar AI
+                    </div>
+                    <div class="flex items-center gap-2.5 bg-white px-4 py-2 rounded-full shadow-sm justify-center sm:justify-start">
+                        <i class="fa-solid fa-circle-check text-emerald-500 text-base"></i>
+                        Caption & Hashtag Otomatis
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ilustrasi & Box Melayang Responsif -->
+            <div class="floating mt-8 lg:mt-0 px-4 sm:px-12 lg:px-0" data-aos="fade-left" data-aos-duration="1000" data-aos-delay="200">
+                <div class="bg-white border border-slate-200 rounded-[2rem] sm:rounded-[3rem] p-4 shadow-2xl shadow-slate-300/60 relative max-w-[450px] mx-auto">
+                    <div class="w-full aspect-square">
+                        <lottie-player src="https://lottie.host/804b46c6-3023-4467-85b4-d75752c021f1/X8x95q08W4.json" background="transparent" speed="1" loop autoplay></lottie-player>
+                    </div>
+                    
+                    <!-- Disesuaikan agar pas di mobile & tidak offscreen -->
+                    <div class="absolute -bottom-6 left-1/2 -translate-x-1/2 sm:translate-x-0 sm:left-[-20px] bg-slate-900 text-white rounded-2xl p-4 sm:p-5 shadow-xl transition-all card-hover w-[90%] sm:w-64 border-4 border-white">
+                        <div class="flex items-center gap-3 mb-2 sm:mb-3">
+                            <i class="fa-solid fa-fire text-orange-400 text-lg sm:text-xl animate-pulse"></i>
+                            <p class="text-xs sm:text-sm font-bold">Hasil Rekomendasi</p>
+                        </div>
+                        <h3 class="text-sm sm:text-lg font-extrabold leading-snug">"5 Kesalahan Pemula Belajar Coding"</h3>
+                        <div class="flex justify-between items-center mt-2 sm:mt-3 text-[10px] sm:text-xs text-slate-300">
+                            <span>Platform: TikTok</span>
+                            <span class="font-bold text-emerald-400">Score: 98%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<section id="cara-kerja" class="py-16 sm:py-28 bg-white border-y border-slate-100 relative overflow-hidden">
+    <div class="absolute top-0 right-0 w-80 h-80 bg-slate-100 rounded-full blur-3xl opacity-50 translate-x-1/2 -translate-y-1/2"></div>
+
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 relative">
+        <div class="text-center max-w-2xl mx-auto" data-aos="fade-up">
+            <div class="inline-block px-4 py-1.5 rounded-full bg-slate-100 text-slate-600 text-xs font-bold mb-4 border border-slate-200">PROSES MUDAH</div>
+            <h2 class="text-3xl sm:text-4xl md:text-5xl font-black text-slate-950 tracking-tight">
+                Cara Kerja <span class="text-blue-600">TrendReco</span>
+            </h2>
+            <p class="mt-4 sm:mt-6 text-base sm:text-lg text-slate-700 leading-relaxed">
+                Sistem kami dirancang sangat sederhana agar siapa saja bisa menggunakannya tanpa bingung. Cukup 3 langkah mudah!
+            </p>
+        </div>
+
+        <div class="grid md:grid-cols-3 gap-6 sm:gap-8 mt-12 sm:mt-20 relative">
+            <div class="hidden md:block absolute top-1/2 left-0 w-full h-1 bg-blue-100 -translate-y-1/2 z-0 rounded-full"></div>
+
+            <div class="bg-slate-50 border border-slate-200 rounded-[2rem] sm:rounded-[2.5rem] p-6 sm:p-10 card-hover relative z-10 text-center" data-aos="fade-up" data-aos-delay="100">
+                <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-blue-600 text-white flex items-center justify-center text-2xl sm:text-3xl font-black mb-6 sm:mb-8 mx-auto shadow-lg shadow-blue-200">
+                    1
+                </div>
+                <div class="w-20 h-20 sm:w-24 sm:h-24 mx-auto mb-4 sm:mb-6">
+                    <lottie-player src="https://lottie.host/8816c2da-8789-4089-9896-e17926715f06/L4zVqE57o3.json" speed="1" loop autoplay></lottie-player>
+                </div>
+                <h3 class="text-xl sm:text-2xl font-extrabold text-slate-950">Masukkan Topik</h3>
+                <p class="mt-3 text-sm sm:text-base text-slate-700 leading-relaxed">
+                    Tuliskan ide konten kasarmu atau topik yang ingin kamu bahas.
+                </p>
+            </div>
+
+            <div class="bg-slate-50 border border-slate-200 rounded-[2rem] sm:rounded-[2.5rem] p-6 sm:p-10 card-hover relative z-10 text-center" data-aos="fade-up" data-aos-delay="300">
+                <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-blue-600 text-white flex items-center justify-center text-2xl sm:text-3xl font-black mb-6 sm:mb-8 mx-auto shadow-lg shadow-blue-200">
+                    2
+                </div>
+                <div class="w-20 h-20 sm:w-24 sm:h-24 mx-auto mb-4 sm:mb-6">
+                    <lottie-player src="https://lottie.host/d5e6834d-e9c5-4081-9b0c-43f14068305c/Y7X1xHjY0p.json" speed="1" loop autoplay></lottie-player>
+                </div>
+                <h3 class="text-xl sm:text-2xl font-extrabold text-slate-950">AI Analisis Tren</h3>
+                <p class="mt-3 text-sm sm:text-base text-slate-700 leading-relaxed">
+                    Sistem kami membandingkan topikmu dengan tren media sosial terbaru.
+                </p>
+            </div>
+
+            <div class="bg-slate-50 border border-slate-200 rounded-[2rem] sm:rounded-[2.5rem] p-6 sm:p-10 card-hover relative z-10 text-center" data-aos="fade-up" data-aos-delay="500">
+                <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-blue-600 text-white flex items-center justify-center text-2xl sm:text-3xl font-black mb-6 sm:mb-8 mx-auto shadow-lg shadow-blue-200">
+                    3
+                </div>
+                <div class="w-20 h-20 sm:w-24 sm:h-24 mx-auto mb-4 sm:mb-6">
+                    <lottie-player src="https://lottie.host/76b7468a-b924-4f01-8314-b636006c0032/qVw8Vj5U9i.json" speed="1" loop autoplay></lottie-player>
+                </div>
+                <h3 class="text-xl sm:text-2xl font-extrabold text-slate-950">Dapatkan Strategi</h3>
+                <p class="mt-3 text-sm sm:text-base text-slate-700 leading-relaxed">
+                    AI memberikan ide, caption, hashtag, dan storyboard video.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="fitur" class="py-16 sm:py-28 relative overflow-hidden">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 relative">
+        <div class="text-center max-w-2xl mx-auto mb-12 sm:mb-20" data-aos="fade-up">
+            <div class="inline-block px-4 py-1.5 rounded-full bg-blue-100 text-blue-700 text-xs font-bold mb-4 shadow-inner">FITUR UNGGULAN</div>
+            <h2 class="text-3xl sm:text-4xl md:text-5xl font-black text-slate-950 tracking-tight">
+                Fitur Utama Kami
+            </h2>
+            <p class="mt-4 sm:mt-6 text-base sm:text-lg text-slate-700">
+                Dibuat khusus agar pengguna awam tetap mudah memahami dan menggunakan hasil dari AI.
+            </p>
+        </div>
+
+        <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 mt-12 sm:mt-16">
+            <div class="bg-white border border-slate-200 rounded-[2rem] p-6 sm:p-8 shadow-sm card-hover flex flex-col items-center text-center" data-aos="zoom-in" data-aos-delay="100">
+                <div class="w-16 h-16 sm:w-20 sm:h-20 mx-auto mb-4 sm:mb-6">
+                    <lottie-player src="https://lottie.host/d1fb01b4-2568-466d-8b4e-e17f4f6e3c6a/p3716YqP4w.json" speed="1" loop autoplay></lottie-player>
+                </div>
+                <h3 class="text-lg sm:text-xl font-extrabold text-slate-950">Analisis Tren</h3>
+                <p class="mt-2.5 text-xs sm:text-sm text-slate-700 leading-relaxed">
+                    Melihat topik apa saja yang sedang ramai dibahas di media sosial secara <i>real-time</i>.
+                </p>
+            </div>
+
+            <div class="bg-white border border-slate-200 rounded-[2rem] p-6 sm:p-8 shadow-sm card-hover flex flex-col items-center text-center" data-aos="zoom-in" data-aos-delay="200">
+                <div class="w-16 h-16 sm:w-20 sm:h-20 mx-auto mb-4 sm:mb-6">
+                    <lottie-player src="https://lottie.host/80f7d542-a0b2-4d56-b072-a1789c670e30/8eU8q2v7Y1.json" speed="1" loop autoplay></lottie-player>
+                </div>
+                <h3 class="text-lg sm:text-xl font-extrabold text-slate-950">Ide Konten AI</h3>
+                <p class="mt-2.5 text-xs sm:text-sm text-slate-700 leading-relaxed">
+                    Memberikan rekomendasi judul dan konsep konten otomatis yang berpotensi viral.
+                </p>
+            </div>
+
+            <div class="bg-white border border-slate-200 rounded-[2rem] p-6 sm:p-8 shadow-sm card-hover flex flex-col items-center text-center" data-aos="zoom-in" data-aos-delay="300">
+                <div class="w-16 h-16 sm:w-20 sm:h-20 mx-auto mb-4 sm:mb-6">
+                    <lottie-player src="https://lottie.host/4934d47c-7204-4530-8041-39626487e35b/z0vT0XqW4G.json" speed="1" loop autoplay></lottie-player>
+                </div>
+                <h3 class="text-lg sm:text-xl font-extrabold text-slate-950">Caption & Hashtag</h3>
+                <p class="mt-2.5 text-xs sm:text-sm text-slate-700 leading-relaxed">
+                    Membuatkan caption menarik dan hashtag relevan agar jangkauan konten lebih luas.
+                </p>
+            </div>
+
+            <div class="bg-white border border-slate-200 rounded-[2rem] p-6 sm:p-8 shadow-sm card-hover flex flex-col items-center text-center" data-aos="zoom-in" data-aos-delay="400">
+                <div class="w-16 h-16 sm:w-20 sm:h-20 mx-auto mb-4 sm:mb-6">
+                    <lottie-player src="https://lottie.host/4f17c800-4b10-449e-8c38-8e6d246c646b/wXy6V3B4K6.json" speed="1" loop autoplay></lottie-player>
+                </div>
+                <h3 class="text-lg sm:text-xl font-extrabold text-slate-950">Storyboard AI</h3>
+                <p class="mt-2.5 text-xs sm:text-sm text-slate-700 leading-relaxed">
+                    Membantu menyusun alur video (skrip & visual) per-detik agar kontenmu terstruktur.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="hasil" class="py-16 sm:py-28 bg-white border-t border-slate-100 relative">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 text-center" data-aos="fade-up" data-aos-duration="800">
+        <div class="bg-gradient-to-br from-blue-600 to-indigo-700 rounded-[2rem] sm:rounded-[3rem] p-8 sm:p-12 md:p-16 text-white shadow-2xl shadow-blue-300 relative overflow-hidden group">
+            
+            <div class="absolute -top-10 -right-10 w-40 h-40 bg-white/10 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-700 overflow-hidden"></div>
+            
+            <div class="relative z-10 flex flex-col md:flex-row items-center gap-8 md:gap-10 text-center md:text-left">
+                <div class="flex-1">
+                    <h2 class="text-2xl sm:text-4xl md:text-5xl font-black leading-tight tracking-tight">
+                        Siap Membuat Konten yang<br>
+                        <span class="text-yellow-300 relative inline-block mt-1">Lebih Terarah?
+                            <svg class="absolute -bottom-2 left-0 w-full" viewBox="0 0 250 10" fill="none"><path d="M2 8C80 2 170 2 248 8" stroke="#FBBF24" stroke-width="4" stroke-linecap="round"/></svg>
+                        </span>
+                    </h2>
+                    <p class="mt-4 sm:mt-6 text-blue-100 text-sm sm:text-lg leading-relaxed max-w-xl mx-auto md:mx-0">
+                        Ayo mulai gunakan TrendReco sekarang dan rasakan kemudahan menemukan peluang konten berdasarkan analisis pintar AI.
+                    </p>
+                </div>
+                
+                <div class="w-36 h-36 sm:w-48 sm:h-48 mx-auto md:mx-0">
+                    <lottie-player src="https://lottie.host/9f50e9df-a068-4228-a6d1-41c1b1816e9c/LwP4Y5P4x4.json" speed="1" loop autoplay></lottie-player>
+                </div>
+            </div>
+
+            <a href="/user/login"
+               class="inline-flex items-center gap-3 mt-8 sm:mt-12 px-8 py-4 sm:px-10 sm:py-5 rounded-full bg-white hover:bg-slate-100 text-slate-950 font-extrabold text-base sm:text-lg transition duration-300 active:scale-95 shadow-xl relative z-10 group w-full sm:w-auto justify-center">
+                <i class="fa-solid fa-sparkles text-blue-600 group-hover:rotate-45 transition-transform"></i>
+                Mulai Sekarang (Gratis!)
+            </a>
+        </div>
+    </div>
+</section>
+
+<footer class="py-12 sm:py-16 bg-slate-50 border-t border-slate-100 text-center">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6">
+        <div class="flex items-center gap-3 justify-center mb-4 sm:mb-6">
+            <div class="w-8 h-8 rounded-lg bg-blue-600 text-white flex items-center justify-center font-bold text-lg">
+                T
+            </div>
+            <h1 class="text-xl font-extrabold tracking-tight">
+                Trend<span class="text-blue-600">Reco</span>
+            </h1>
+        </div>
+        <p class="font-bold text-slate-800 text-sm sm:text-base">
+            AI Content Recommendation System
+        </p>
+        <p class="mt-2 text-xs sm:text-sm text-slate-500">
+           Developed by Hafiidh Yupiza Ramadhani • ITN Malang
+        </p>
+        <p class="mt-6 text-[11px] sm:text-xs text-slate-400">
+            &copy; 2026 TrendReco. All rights reserved.
+        </p>
+    </div>
+</footer>
+
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+
+<script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+
+<script>
+    // Inisialisasi AOS (Animation On Scroll)
+    AOS.init({
+        duration: 800, 
+        easing: 'ease-in-out-cubic', 
+        once: true, 
+    });
+
+    // Fitur Toggle Mobile Menu (Hamburger)
+    const menuBtn = document.getElementById('menu-btn');
+    const mobileMenu = document.getElementById('mobile-menu');
+
+    menuBtn.addEventListener('click', () => {
+        mobileMenu.classList.toggle('hidden');
+    });
+
+    // Menutup menu mobile otomatis jika salah satu link diklik
+    document.querySelectorAll('#mobile-menu a').forEach(link => {
+        link.addEventListener('click', () => {
+            mobileMenu.classList.add('hidden');
+        });
+    });
+
+    // Shortcut Alt + A (Admin Login)
+    document.addEventListener('keydown', function(e) {
+        if (e.altKey && e.key.toLowerCase() === 'a') {
+            window.location.href = '/admin/login';
+        }
+    });
+</script>
+
+</body>
+</html>

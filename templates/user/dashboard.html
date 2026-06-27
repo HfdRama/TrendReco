@@ -1,0 +1,159 @@
+{% extends "user/layout.html" %}
+
+{% block content %}
+<script src="https://cdn.tailwindcss.com?plugins=line-clamp"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+<link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
+
+<style>
+    body {
+        background: #f1f5f9;
+        overflow-x: hidden;
+        font-family: system-ui, -apple-system, sans-serif;
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+        height: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+        background: #f1f5f9;
+        border-radius: 10px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 10px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+        background: #94a3b8;
+    }
+    .transition-card {
+        transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+</style>
+
+<div class="max-w-7xl mx-auto space-y-6 px-3 sm:px-6 py-4">
+
+    <div class="relative overflow-hidden rounded-[2rem] bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-500 p-6 sm:p-8 text-white shadow-xl shadow-purple-500/10" data-aos="fade-down" data-aos-duration="800">
+        <div class="absolute -right-10 -top-10 w-40 h-40 bg-white/10 rounded-full blur-2xl"></div>
+        
+        <div class="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+            <div>
+                <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/20 text-white text-xs font-bold mb-3 backdrop-blur-xs">
+                    <span class="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>
+                    <span>AI Content Generator</span>
+                </div>
+                <h1 class="text-2xl sm:text-4xl font-extrabold leading-tight tracking-tight">
+                    Mau Bikin Konten Apa Hari Ini? ✨
+                </h1>
+                <p class="text-xs sm:text-sm text-purple-100 mt-2 max-w-xl font-medium">
+                    Nggak usah pusing mikirin ide. Masukkan satu kata kunci aja, biar AI yang siapin racikan *Caption*, *Hashtag*, sampai konsep *Video* siap pakai buat kamu!
+                </p>
+            </div>
+
+            <div class="shrink-0">
+                <a href="/user/generate"
+                   class="transition-card w-full md:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-white hover:bg-slate-950 text-indigo-700 hover:text-white font-black text-sm shadow-md transform active:scale-95 hover:scale-105">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i>
+                    <span>Tanya AI Sekarang</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-white border border-slate-200/60 rounded-[2rem] p-5 shadow-xs" data-aos="fade-up">
+        <div class="flex items-center justify-between gap-4 mb-5">
+            <div>
+                <h2 class="text-lg font-black text-slate-950 tracking-tight flex items-center gap-2">
+                    📺 Intip Contoh Short Video
+                </h2>
+                <p class="text-slate-400 text-xs font-medium mt-0.5">Lihat video referensi ini biar kamu punya gambaran visual</p>
+            </div>
+        </div>
+
+        <div class="flex gap-4 overflow-x-auto pb-2 custom-scrollbar snap-x">
+            {% for v in random_videos %}
+            <div class="w-[190px] sm:w-[215px] shrink-0 group snap-start">
+                <div class="rounded-xl overflow-hidden border border-slate-200 bg-slate-950 shadow-2xs transition-card group-hover:shadow-md group-hover:scale-[1.01]">
+                    <div class="aspect-[9/16] relative">
+                        <iframe
+                            class="w-full h-full relative z-10"
+                            src="https://www.youtube.com/embed/{{ v.video_id }}"
+                            allowfullscreen>
+                        </iframe>
+                    </div>
+                </div>
+                <div class="mt-2 px-1">
+                    <p class="font-bold text-slate-800 text-xs line-clamp-2 leading-tight group-hover:text-indigo-600 transition-colors">
+                        {{ v.title }}
+                    </p>
+                    <p class="text-[10px] text-slate-400 font-bold mt-1 flex items-center gap-1 truncate">
+                        <i class="fa-solid fa-circle-user text-slate-300"></i>
+                        <span>{{ v.channel }}</span>
+                    </p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="bg-white border border-slate-200/60 rounded-[2rem] p-5 sm:p-6 shadow-xs" data-aos="fade-up" data-aos-delay="200">
+        <div class="mb-5">
+            <h2 class="text-lg font-black text-slate-950 tracking-tight flex items-center gap-2">
+                📢 Ide Konten yang Lagi Naik Daun
+            </h2>
+            <p class="text-slate-400 text-xs font-medium mt-0.5">Pilih salah satu topik di bawah ini buat langsung diolah sama AI</p>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {% for rec in recommendations %}
+            <div class="transition-card bg-slate-50/70 border border-slate-200/60 rounded-2xl p-5 flex flex-col justify-between hover:bg-white hover:shadow-xl hover:border-indigo-300 hover:-translate-y-1 group">
+                <div>
+                    <div class="flex items-center justify-between gap-2 mb-4">
+                        <span class="px-2.5 py-1 rounded-lg bg-indigo-50 text-indigo-600 text-[10px] font-bold tracking-wide border border-indigo-100">
+                            📢 {{ rec.platform_origin }}
+                        </span>
+                        
+                        {% if loop.index % 2 == 0 %}
+                        <span class="px-2.5 py-1 rounded-lg bg-rose-50 text-rose-600 text-[10px] font-black border border-rose-100 flex items-center gap-1">
+                            🔥 Gacor Parah
+                        </span>
+                        {% else %}
+                        <span class="px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-600 text-[10px] font-black border border-emerald-100 flex items-center gap-1">
+                            🚀 Potensi FYP
+                        </span>
+                        {% endif %}
+                    </div>
+
+                    <p class="font-extrabold text-slate-800 text-sm sm:text-base leading-snug line-clamp-3 mb-4 group-hover:text-indigo-600 transition-colors">
+                        "{{ rec.content_preview[:90] }}..."
+                    </p>
+                </div>
+
+                <a href="/user/generate?keyword={{ rec.content_preview }}"
+                   class="transition-card w-full inline-flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-slate-900 group-hover:bg-indigo-600 text-white text-xs font-black tracking-wide transform active:scale-98 mt-2 shadow-xs">
+                    <span>Bikinin Konsep Konten Ini 🚀</span>
+                </a>
+            </div>
+            {% else %}
+            <div class="col-span-full py-12 text-center">
+                <div class="w-14 h-14 mx-auto rounded-xl bg-slate-100 flex items-center justify-center text-slate-300">
+                    <i class="fa-solid fa-folder-open text-xl"></i>
+                </div>
+                <h3 class="mt-4 text-sm font-black text-slate-800">Belum ada ide terkumpul</h3>
+                <p class="mt-1 text-xs text-slate-400 font-medium">AI sedang memantau tren media sosial dulu ya.</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    
+
+</div>
+
+<script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+<script>
+    AOS.init({
+        once: true,
+        mirror: false
+    });
+</script>
+{% endblock %}

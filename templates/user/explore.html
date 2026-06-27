@@ -1,0 +1,211 @@
+{% extends "user/layout.html" %}
+
+{% block title %}Eksplorasi Konten | TrendReco{% endblock %}
+
+{% block content %}
+<script src="https://cdn.tailwindcss.com?plugins=line-clamp"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+<link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
+
+<style>
+    body {
+        background: #f8fafc;
+        font-family: system-ui, -apple-system, sans-serif;
+    }
+    .transition-card {
+        transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+</style>
+
+<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+
+    <div class="text-center sm:text-left" data-aos="fade-down" data-aos-duration="600">
+        <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-50 border border-blue-100 text-blue-600 text-xs font-bold">
+            <i class="fa-solid fa-compass animate-spin-slow"></i>
+            <span>Temukan Inspirasimu</span>
+        </div>
+        <h1 class="mt-3 text-3xl sm:text-5xl font-black text-slate-900 leading-tight tracking-tight">
+            Yuk, Intip Contoh <span class="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Video Viral!</span> 📺
+        </h1>
+        <p class="mt-2 text-sm sm:text-base text-slate-500 max-w-2xl font-medium">
+            Ketik satu kata kunci di bawah ini. AI bakal bantu kamu langsung cari contoh video tersukses dan paling ramai di media sosial buat dicontek konsepnya!
+        </p>
+    </div>
+
+    <div class="bg-white border border-slate-200/80 rounded-[2rem] shadow-xl shadow-slate-100/50 p-5 sm:p-7" data-aos="fade-up" data-aos-delay="100">
+        <form method="GET" action="/user/explore">
+            <div class="flex flex-col md:flex-row items-end gap-4">
+                <div class="w-full">
+                    <label class="text-xs font-black text-slate-400 uppercase tracking-wider block mb-2 px-1">
+                        Mau cari ide tentang apa hari ini?
+                    </label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-slate-400 text-lg">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                        </span>
+                        <input
+                            type="text"
+                            name="keyword"
+                            value="{{ keyword if keyword else '' }}"
+                            placeholder="Contoh: resep kopi kekinian, tips edit video aesthetic..."
+                            class="w-full pl-12 pr-4 py-4 rounded-2xl border-2 border-slate-100 bg-slate-50/50 focus:bg-white text-sm font-semibold text-slate-800 placeholder-slate-400/80 focus:ring-4 focus:ring-blue-100 focus:border-blue-500 outline-none transition-all"
+                            required
+                        >
+                    </div>
+                </div>
+                <button
+                    type="submit"
+                    class="transition-card w-full md:w-auto shrink-0 px-8 py-4 rounded-2xl bg-gradient-to-r from-slate-900 to-slate-800 hover:from-blue-600 hover:to-indigo-600 text-white font-black text-sm tracking-wide shadow-md active:scale-95">
+                    <span>Cari Inspirasi 🚀</span>
+                </button>
+            </div>
+        </form>
+    </div>
+
+    {% if not keyword %}
+    <div class="space-y-8" data-aos="fade-up" data-aos-delay="200">
+        <div class="bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 rounded-[2rem] p-6 sm:p-10 text-white relative overflow-hidden shadow-xl">
+            <div class="absolute -top-10 -right-10 w-48 h-48 bg-blue-500/10 blur-3xl rounded-full"></div>
+            <div class="absolute -bottom-10 -left-10 w-48 h-48 bg-purple-500/10 blur-3xl rounded-full"></div>
+
+            <div class="relative z-10 max-w-xl text-center sm:text-left">
+                <h2 class="text-xl sm:text-3xl font-black leading-tight">
+                    Bingung Mulai Dari Mana? 🤔
+                </h2>
+                <p class="mt-2 text-xs sm:text-sm text-slate-300 font-medium leading-relaxed">
+                    Jangan khawatir! Ketik topik apa saja di atas (misal: "kuliner", "gadget", atau "edukasi"). Sistem kami akan langsung menampilkan video nyata yang sudah terbukti disukai banyak orang.
+                </p>
+                <div class="mt-6 pt-4 border-t border-white/10 flex flex-wrap items-center justify-center sm:justify-start gap-2.5 text-[11px] font-bold text-slate-400">
+                    <span>Sistem akan mencarikan:</span>
+                    <span class="px-2.5 py-1 rounded-lg bg-white/10 text-white">🎬 Video YouTube</span>
+                    <span class="px-2.5 py-1 rounded-lg bg-white/10 text-white">🔥 Tren TikTok</span>
+                    <span class="px-2.5 py-1 rounded-lg bg-white/10 text-white">📸 Ide Reels</span>
+                </div>
+            </div>
+        </div>
+
+        <div>
+            <h3 class="text-base font-black text-slate-800 mb-4 flex items-center gap-2 px-1">
+                <i class="fa-solid fa-eye text-slate-400"></i> Contoh Tampilan Hasil Pencarian
+            </h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 opacity-60">
+                {% for i in range(3) %}
+                <div class="border border-slate-200/60 bg-white rounded-3xl p-5 animate-pulse">
+                    <div class="aspect-video w-full bg-slate-100 rounded-2xl mb-4"></div>
+                    <div class="h-4 w-3/4 bg-slate-200 rounded-lg"></div>
+                    <div class="h-3 w-1/2 bg-slate-100 rounded-lg mt-2"></div>
+                    <div class="h-10 w-full bg-slate-100 rounded-xl mt-4"></div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    {% if keyword %}
+    <div class="space-y-8" data-aos="fade-up">
+
+        <div class="bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-600 rounded-[2rem] p-6 text-white shadow-lg">
+            <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+                <div>
+                    <p class="text-xs font-bold text-blue-100 uppercase tracking-widest">Kata Kunci Pencarian Kamu:</p>
+                    <h2 class="mt-1 text-2xl sm:text-3xl font-black break-words">"{{ keyword }}"</h2>
+                    <p class="mt-1.5 text-xs text-indigo-100">Klik tombol di samping untuk langsung meluncur ke aplikasi aslinya!</p>
+                </div>
+                
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 shrink-0">
+                    <a href="https://www.tiktok.com/search?q={{ keyword }}" target="_blank"
+                       class="transition-card px-5 py-3.5 rounded-xl bg-black text-white font-black text-xs flex items-center justify-center gap-2 hover:-translate-y-1 shadow-md">
+                        <i class="fa-brands fa-tiktok text-sm"></i> <span>Buka TikTok</span>
+                    </a>
+                    <a href="https://www.youtube.com/results?search_query={{ keyword }}" target="_blank"
+                       class="transition-card px-5 py-3.5 rounded-xl bg-red-600 text-white font-black text-xs flex items-center justify-center gap-2 hover:-translate-y-1 shadow-md">
+                        <i class="fa-brands fa-youtube text-sm"></i> <span>Buka YouTube</span>
+                    </a>
+                    <a href="https://www.instagram.com/explore/tags/{{ keyword|replace(' ','') }}/" target="_blank"
+                       class="transition-card px-5 py-3.5 rounded-xl bg-gradient-to-r from-pink-500 to-purple-500 text-white font-black text-xs flex items-center justify-center gap-2 hover:-translate-y-1 shadow-md">
+                        <i class="fa-brands fa-instagram text-sm"></i> <span>Buka Instagram</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="space-y-5">
+            <div class="flex items-center gap-3 px-1">
+                <div class="w-10 h-10 rounded-xl bg-red-50 border border-red-100 text-red-500 flex items-center justify-center text-lg">
+                    <i class="fa-brands fa-youtube"></i>
+                </div>
+                <div>
+                    <h2 class="text-xl font-black text-slate-900 tracking-tight">Tonton Langsung Contoh Videonya di Sini</h2>
+                    <p class="text-slate-400 text-xs font-medium">Ini dia deretan video yang paling pas buat kamu jadikan referensi ide</p>
+                </div>
+            </div>
+
+            {% if youtube_videos %}
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {% for video in youtube_videos %}
+                <div class="transition-card bg-white border border-slate-200/70 rounded-[2rem] overflow-hidden shadow-xs hover:shadow-xl hover:border-blue-200 group">
+                    <div class="aspect-video w-full bg-slate-900 relative">
+                        <iframe class="w-full h-full relative z-10"
+                                src="https://www.youtube.com/embed/{{ video.video_id }}"
+                                allowfullscreen>
+                        </iframe>
+                    </div>
+
+                    <div class="p-5 flex flex-col justify-between min-h-[175px]">
+                        <div>
+                            <div class="mb-2.5">
+                                {% if loop.index == 1 %}
+                                <span class="px-2 py-0.5 rounded-md bg-amber-50 text-amber-600 border border-amber-200 text-[10px] font-black"><i class="fa-solid fa-fire mr-1"></i> Paling Banyak Ditonton</span>
+                                {% elif loop.index == 2 %}
+                                <span class="px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-600 border border-emerald-200 text-[10px] font-black"><i class="fa-solid fa-star mr-1"></i> Referensi Kreator</span>
+                                {% else %}
+                                <span class="px-2 py-0.5 rounded-md bg-blue-50 text-blue-600 border border-blue-200 text-[10px] font-black"><i class="fa-solid fa-bolt mr-1"></i> Rekomendasi Tinggi</span>
+                                {% endif %}
+                            </div>
+
+                            <h3 class="font-extrabold text-slate-800 text-sm sm:text-base leading-snug line-clamp-2 group-hover:text-blue-600 transition-colors">
+                                {{ video.title }}
+                            </h3>
+                            <p class="mt-1 text-xs text-slate-400 font-bold flex items-center gap-1">
+                                <i class="fa-solid fa-circle-user text-slate-300"></i>
+                                <span>{{ video.channel }}</span>
+                            </p>
+                        </div>
+
+                        <a href="https://www.youtube.com/watch?v={{ video.video_id }}"
+                           target="_blank"
+                           class="transition-card mt-4 inline-flex items-center justify-center gap-2 w-full py-3 rounded-xl bg-slate-50 group-hover:bg-red-600 text-slate-700 group-hover:text-white font-black text-xs tracking-wide">
+                            <i class="fa-solid fa-play"></i>
+                            <span>Buka di Aplikasi YouTube</span>
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            {% else %}
+            <div class="bg-white border border-slate-200 rounded-[2rem] p-10 text-center shadow-xs">
+                <div class="w-16 h-16 bg-red-50 text-red-500 rounded-2xl flex items-center justify-center mx-auto text-2xl mb-4">
+                    <i class="fa-solid fa-video-slash"></i>
+                </div>
+                <h3 class="text-lg font-black text-slate-800">Video Tidak Ditemukan</h3>
+                <p class="mt-1 text-xs text-slate-400 font-medium max-w-sm mx-auto">
+                    Aduh, AI belum berhasil nemuin preview video untuk kata kunci ini. Coba pakai kata kunci umum lainnya ya!
+                </p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+
+</div>
+
+<script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+<script>
+    AOS.init({
+        once: true,
+        mirror: false
+    });
+</script>
+{% endblock %}
