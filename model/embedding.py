@@ -15,24 +15,27 @@ def get_model():
     return model
 
 
-def embed(texts):
+def embed(texts, batch_size=32):
 
     model = get_model()
 
-    # bersihkan data kosong
-    texts = [
-        str(t).strip()
-        for t in texts
-        if t is not None and str(t).strip()
-    ]
+    all_vectors = []
 
-    if len(texts) == 0:
-        return np.array([])
+    for i in range(0, len(texts), batch_size):
 
-    vecs = model.encode(
-        texts,
-        batch_size=32,
-        show_progress_bar=False
-    )
+        batch = texts[i:i + batch_size]
 
-    return np.asarray(vecs)
+        print(
+            f"Embedding batch {i+1} - {i+len(batch)}"
+        )
+
+        vectors = model.encode(
+            batch,
+            batch_size=8,
+            show_progress_bar=False,
+            convert_to_numpy=True
+        )
+
+        all_vectors.extend(vectors)
+
+    return np.array(all_vectors)
