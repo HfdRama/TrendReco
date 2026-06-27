@@ -934,6 +934,8 @@ def init_admin_routes(app):
 
                     db.session.commit()
 
+                    db.session.expunge_all()
+
                     print(
                         f"{count} data selesai diproses"
                     )
@@ -991,12 +993,16 @@ def init_admin_routes(app):
 
                     db.session.commit()
 
+                    db.session.expunge_all()
+
                     print(
                         f"{count} data selesai diproses"
                     )
 
             # commit sisa data
             db.session.commit()
+
+            db.session.expunge_all()
 
             return jsonify({
 
