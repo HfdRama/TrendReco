@@ -60,7 +60,7 @@ os.makedirs(os.path.join(UPLOAD_FOLDER, "gtrends"), exist_ok=True)
 # ======================
 @app.route("/")
 def home():
-    return "TrendReco running"
+    return "index.html"
 
 app.register_blueprint(common_bp)
 init_user_routes(app)
