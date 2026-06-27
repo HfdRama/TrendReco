@@ -1,3 +1,6 @@
+import pymysql
+pymysql.install_as_MySQLdb()
+
 import os
 from flask import Flask, render_template, session, flash, redirect, url_for
 from extensions import db, cache # Import cache dari extensions
@@ -8,7 +11,7 @@ from routes.common import common_bp
 from routes.user import init_user_routes
 from routes.admin import init_admin_routes
 from routes.chatbot import init_chatbot_routes
-import pymysql
+
 
 
 print("APP START")
