@@ -16,7 +16,12 @@ app = Flask(__name__)
 app.secret_key = "kunci_rahasia_skripsi_2026"
 
 # --- KONFIGURASI DATABASE ---
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:@localhost/db_trendreco'
+DATABASE_URL = os.getenv(
+    "DATABASE_URL",
+    "mysql+pymysql://root:@localhost/db_trendreco"
+)
+
+app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URL
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # --- KONFIGURASI CACHE (SimpleCache untuk RAM) ---
