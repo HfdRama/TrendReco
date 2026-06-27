@@ -1,11 +1,12 @@
 import re
+
 try:
     from indoNLP.preprocessing import replace_slang
 except:
     def replace_slang(text):
         return text
-from rapidfuzz import process
 
+from rapidfuzz import process
 from Sastrawi.StopWordRemover.StopWordRemoverFactory import (
     StopWordRemoverFactory
 )
@@ -21,18 +22,28 @@ STOPWORDS = set(
 
 # ==================================
 # GLOBAL VOCABULARY
-# Akan diisi dari dataset
 # ==================================
 VOCABULARY = []
+VOCABULARY_SET = set()
 
 
 def set_vocabulary(vocab):
+    global VOCABULARY, VOCABULARY_SET
 
-    global VOCABULARY
-
-    VOCABULARY = list(
-        set(vocab)
+    clean_vocab = list(
+        set(
+            str(w).lower().strip()
+            for w in vocab
+            if str(w).strip()
+        )
     )
+
+    # Batasi maksimal 5000 kata
+    VOCABULARY = clean_vocab[:5000]
+
+    VOCABULARY_SET = set(VOCABULARY)
+
+    print(f"Vocabulary Loaded: {len(VOCABULARY)} words")
 
 
 def build_vocabulary(texts):
@@ -48,7 +59,6 @@ def build_vocabulary(texts):
         for word in text.split():
 
             if len(word) >= 3:
-
                 vocab.add(word)
 
     return list(vocab)
@@ -112,29 +122,10 @@ def cleaning(text):
     if text is None:
         return ""
 
-    text = re.sub(
-        r"http\S+",
-        " ",
-        text
-    )
-
-    text = re.sub(
-        r"www\S+",
-        " ",
-        text
-    )
-
-    text = re.sub(
-        r"[^a-z0-9\s]",
-        " ",
-        text
-    )
-
-    text = re.sub(
-        r"\s+",
-        " ",
-        text
-    )
+    text = re.sub(r"http\S+", " ", text)
+    text = re.sub(r"www\S+", " ", text)
+    text = re.sub(r"[^a-z0-9\s]", " ", text)
+    text = re.sub(r"\s+", " ", text)
 
     return text.strip()
 
@@ -147,17 +138,35 @@ def correct_typo(word):
     if len(word) <= 3:
         return word
 
+    # Jika kata sudah ada di vocab
+    if word in VOCABULARY_SET:
+        return word
+
+    # Hindari kata panjang
+    if len(word) > 15:
+        return word
+
+    # Hanya koreksi kata pendek
+    if len(word) > 8:
+        return word
+
+    # Tidak ada vocabulary
     if not VOCABULARY:
         return word
 
-    match = process.extractOne(
-        word,
-        VOCABULARY,
-        score_cutoff=85
-    )
+    try:
 
-    if match:
-        return match[0]
+        match = process.extractOne(
+            word,
+            VOCABULARY,
+            score_cutoff=90
+        )
+
+        if match:
+            return match[0]
+
+    except:
+        pass
 
     return word
 
@@ -167,40 +176,8 @@ def correct_typo(word):
 # ==================================
 def split_compound_word(word):
 
-    if len(word) <= 8:
-        return word
-
-    if not VOCABULARY:
-        return word
-
-    result = []
-
-    temp = word
-
-    while len(temp) > 0:
-
-        found = False
-
-        for vocab in sorted(
-            VOCABULARY,
-            key=len,
-            reverse=True
-        ):
-
-            if temp.startswith(vocab):
-
-                result.append(vocab)
-
-                temp = temp[len(vocab):]
-
-                found = True
-
-                break
-
-        if not found:
-            return word
-
-    return " ".join(result)
+    # Nonaktifkan sementara
+    return word
 
 
 # ==================================
@@ -219,25 +196,15 @@ def normalization(text):
 
         for word in text.split():
 
-            segmented = split_compound_word(
-                word
-            )
+            token = correct_typo(word)
 
-            for token in segmented.split():
+            normalized_words.append(token)
 
-                token = correct_typo(
-                    token
-                )
+        return " ".join(normalized_words)
 
-                normalized_words.append(
-                    token
-                )
+    except Exception as e:
 
-        return " ".join(
-            normalized_words
-        )
-
-    except Exception:
+        print("Normalization Error:", e)
 
         return text
 
@@ -266,11 +233,8 @@ def stopword_removal(tokens):
         return []
 
     return [
-
         token
-
         for token in tokens
-
         if token not in STOPWORDS
     ]
 
@@ -282,21 +246,13 @@ def full_preprocess(text):
 
     text_cf = case_folding(text)
 
-    text_clean = cleaning(
-        text_cf
-    )
+    text_clean = cleaning(text_cf)
 
-    text_norm = normalization(
-        text_clean
-    )
+    text_norm = normalization(text_clean)
 
-    tokens = tokenizing(
-        text_norm
-    )
+    tokens = tokenizing(text_norm)
 
-    tokens_no_stop = stopword_removal(
-        tokens
-    )
+    tokens_no_stop = stopword_removal(tokens)
 
     if not tokens_no_stop:
         tokens_no_stop = tokens
@@ -315,7 +271,5 @@ def full_preprocess(text):
 
         "final_tokens": tokens_no_stop,
 
-        "final_text": " ".join(
-            tokens_no_stop
-        )
+        "final_text": " ".join(tokens_no_stop)
     }
