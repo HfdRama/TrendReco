@@ -8,7 +8,8 @@ from routes.common import common_bp
 from routes.user import init_user_routes
 from routes.admin import init_admin_routes
 from routes.chatbot import init_chatbot_routes
-
+import pymysql
+pymysql.install_as_MySQLdb()
 
 
 print("APP START")
@@ -18,7 +19,7 @@ app.secret_key = "kunci_rahasia_skripsi_2026"
 # --- KONFIGURASI DATABASE ---
 DATABASE_URL = os.getenv(
     "DATABASE_URL",
-    "mysql+pymysql://root:@localhost/db_trendreco"
+    "mysql+mysqlconnector://root:@localhost/db_trendreco"
 )
 
 app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URL
