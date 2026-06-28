@@ -9,7 +9,7 @@ def get_model():
     if model is None:
         print("Loading SentenceTransformer...")
         model = SentenceTransformer(
-            'all-MiniLM-L6-v2'
+            'paraphrase-MiniLM-L3-v2'
         )
 
     return model
