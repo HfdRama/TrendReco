@@ -286,7 +286,7 @@ def run_pipeline(
             SELECT *
             FROM trends_data
             ORDER BY id DESC
-            LIMIT 500
+            LIMIT 100
 
         """, db.engine).copy()
 
@@ -299,7 +299,7 @@ def run_pipeline(
             FROM sosmed_data
             WHERE LOWER(platform)
             LIKE '%%{platform.lower()}%%'
-            LIMIT 500
+            LIMIT 100
         """, db.engine).copy()
 
         # =========================
