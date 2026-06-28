@@ -305,14 +305,20 @@ def run_pipeline(
         # =========================
         # GET PREPROCESS
         # =========================
-        preprocessed = pd.read_sql("""
+        trend_ids = ",".join(map(str, trends["id"].tolist()))
+        content_ids = ",".join(map(str, contents["id"].tolist()))
 
-            SELECT
-                source_id,
-                source_type,
-                final_text
-            FROM preprocessing_data
-
+        preprocessed = pd.read_sql(f"""
+        SELECT source_id,
+            source_type,
+            final_text
+        FROM preprocessing_data
+        WHERE
+        (source_type='trend'
+        AND source_id IN ({trend_ids}))
+        OR
+        (source_type='sosmed'
+        AND source_id IN ({content_ids}))
         """, db.engine)
 
     except Exception as e:
@@ -508,8 +514,7 @@ def run_pipeline(
     content_vecs = embed(
         content_texts
     )
-    trends['embedding'] = list(trend_vecs)
-    contents['embedding'] = list(content_vecs)
+    
     # =========================
     # SIMILARITY
     # =========================
@@ -556,52 +561,34 @@ def run_pipeline(
     trend_mask = trends['sim'] >= threshold
 
     if trend_mask.sum() < 5:
+        soft_threshold = max(0.20, threshold - 0.10)
+        trend_mask = trends['sim'] >= soft_threshold
 
-        soft_threshold = max(
-            0.20,
-            threshold - 0.10
-        )
+    # simpan index sebelum dataframe dipotong
+    selected_trend_idx = trend_mask.values
 
-        trend_mask = (
-            trends['sim'] >= soft_threshold
-        )
-
-    trends = trends[
-        trend_mask
-    ].copy()
+    trends = trends[trend_mask].copy()
 
     if len(trends) < 5:
-
         trends = trends.sort_values(
             by=['sim', 'keyword_boost'],
             ascending=False
         ).head(10)
 
-
     # =========================
     # CONTENT FILTER
     # =========================
-    content_mask = (
-        contents['sim'] >= threshold
-    )
+    content_mask = contents['sim'] >= threshold
 
     if content_mask.sum() < 10:
+        soft_threshold = max(0.20, threshold - 0.15)
+        content_mask = contents['sim'] >= soft_threshold
 
-        soft_threshold = max(
-            0.20,
-            threshold - 0.15
-        )
+    selected_content_idx = content_mask.values
 
-        content_mask = (
-            contents['sim'] >= soft_threshold
-        )
-
-    contents = contents[
-        content_mask
-    ].copy()
+    contents = contents[content_mask].copy()
 
     if len(contents) < 10:
-
         contents = contents.sort_values(
             by='sim',
             ascending=False
@@ -626,13 +613,8 @@ def run_pipeline(
     # =========================
     # DENSITY
     # =========================
-    filtered_content_vecs = np.vstack(
-        contents['embedding'].values
-    )
-
-    filtered_trend_vecs = np.vstack(
-        trends['embedding'].values
-    )
+    filtered_trend_vecs = trend_vecs[selected_trend_idx]
+    filtered_content_vecs = content_vecs[selected_content_idx]
 
     densities = content_density(
         filtered_trend_vecs,
