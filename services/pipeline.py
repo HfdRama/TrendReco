@@ -1,7 +1,7 @@
 import pandas as pd
-
+import numpy as np
+import pandas as pd
 from extensions import db
-
 from utils.preprocessing import full_preprocess
 
 from model.embedding import embed
@@ -299,7 +299,7 @@ def run_pipeline(
             FROM sosmed_data
             WHERE LOWER(platform)
             LIKE '%%{platform.lower()}%%'
-
+            LIMIT 500
         """, db.engine).copy()
 
         # =========================
@@ -508,7 +508,8 @@ def run_pipeline(
     content_vecs = embed(
         content_texts
     )
-
+    trends['embedding'] = list(trend_vecs)
+    contents['embedding'] = list(content_vecs)
     # =========================
     # SIMILARITY
     # =========================
@@ -625,11 +626,12 @@ def run_pipeline(
     # =========================
     # DENSITY
     # =========================
-    filtered_content_vecs = embed(
-        contents['clean'].tolist()
+    filtered_content_vecs = np.vstack(
+        contents['embedding'].values
     )
-    filtered_trend_vecs = embed(
-        trends['clean'].tolist()
+
+    filtered_trend_vecs = np.vstack(
+        trends['embedding'].values
     )
 
     densities = content_density(

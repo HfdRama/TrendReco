@@ -15,7 +15,7 @@ def get_model():
     return model
 
 
-def embed(texts, batch_size=32):
+def embed(texts, batch_size=8):
 
     model = get_model()
 
@@ -31,7 +31,7 @@ def embed(texts, batch_size=32):
 
         vectors = model.encode(
             batch,
-            batch_size=8,
+            batch_size=batch_size,
             show_progress_bar=False,
             convert_to_numpy=True
         )
