@@ -15,7 +15,7 @@ def get_model():
     return model
 
 
-def embed(texts, batch_size=8):
+def embed(texts, batch_size=2):
 
     model = get_model()
 
